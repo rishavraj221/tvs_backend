@@ -5,7 +5,13 @@ const cors = require("cors");
 const { main_func } = require("./index");
 const { giveToken } = require("./auth");
 const { uploadPdf, getPdf } = require("./s3Upload");
-const { updatePdf, scanAllPdfs } = require("./dynamo");
+const {
+  updatePdf,
+  scanSavedPdfs,
+  updateNEPdf,
+  scanNEPdfs,
+  updateNEPdfApproval,
+} = require("./dynamo");
 
 const corsOpts = {
   origin: "*",
@@ -65,8 +71,30 @@ app.post("/update-pdf", jsonParser, async (req, res) => {
   res.send(result);
 });
 
+app.post("/update-ne-pdf", jsonParser, async (req, res) => {
+  const event = { ...req.body };
+
+  const result = await updateNEPdf(event);
+
+  res.send(result);
+});
+
+app.post("/update-ne-pdf-approval", jsonParser, async (req, res) => {
+  const event = { ...req.body };
+
+  const result = await updateNEPdfApproval(event);
+
+  res.send(result);
+});
+
 app.get("/all-pdfs", jsonParser, async (req, res) => {
-  const result = await scanAllPdfs();
+  const result = await scanSavedPdfs();
+
+  res.send(result);
+});
+
+app.get("/all-ne-pdfs", jsonParser, async (req, res) => {
+  const result = await scanNEPdfs();
 
   res.send(result);
 });

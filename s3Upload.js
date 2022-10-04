@@ -1,4 +1,5 @@
 const AWS = require("aws-sdk");
+const { uid } = require("uid");
 
 const s3 = new AWS.S3();
 
@@ -6,10 +7,12 @@ const Bucket = "tvs-comp";
 
 // exports.handler = async (event) => {
 const uploadPdf = async (event) => {
+  const Key = uid(16);
+
   const upload_pdf = await s3
     .upload({
       Bucket,
-      Key: event.fileName,
+      Key,
       Body: new Uint8Array(event.arrayBuffer),
       ContentType: "application/pdf",
     })
@@ -26,6 +29,7 @@ const uploadPdf = async (event) => {
 };
 
 const getPdfFromS3 = async (event) => {
+  console.log(event);
   const params = {
     Bucket,
     Key: event.Key,
